@@ -89,41 +89,23 @@
                                     <th class="p-2 rounded-tl-md">SL</th>
                                     <th class="p-2 ">Name</th>
                                     <th class="p-2 ">Email</th>
+                                    <th class="p-2 ">Phone</th>
                                     <th class="p-2 rounded-tr-md">Action</th>
                                 </tr>
                             </thead>
-                            <tbody class="">
-                                <tr class="border-b border-gray-300 bg-gray-200">
-                                    <td class="p-2">1</td>
-                                    <td class="p-2">Samiul</td>
-                                    <td class="p-2">samiul@gmail.com</td>
-                                    <td class="p-2"><button class="bg-red-500 text-gray-200 p-1 px-2 rounded-lg">Delete</button></td>
-                                </tr>
-                                <tr class="border-b border-gray-300 bg-gray-100">
-                                    <td class="p-2">1</td>
-                                    <td class="p-2">Samiul</td>
-                                    <td class="p-2">samiul@gmail.com</td>
-                                    <td class="p-2"><button class="bg-red-500 text-gray-200 p-1 px-2 rounded-lg">Delete</button></td>
-                                </tr>
-                                <tr class="border-b border-gray-300 bg-gray-200">
-                                    <td class="p-2">1</td>
-                                    <td class="p-2">Samiul</td>
-                                    <td class="p-2">samiul@gmail.com</td>
-                                    <td class="p-2"><button class="bg-red-500 text-gray-200 p-1 px-2 rounded-lg">Delete</button></td>
-                                </tr>
-
-                                <tr class="text-center text-sm text-gray-100 bg-gray-50 rounded-b-lg border-b border-gray-300">
-                                    <td colspan="4">
-                                        <button class="bg-gray-400 cursor-pointer my-1 px-1 rounded-l">Previous</button>
-                                        <button class="bg-gray-400 cursor-pointer my-1 px-2">1</button>
-                                        <button class="bg-gray-400 cursor-pointer my-1 px-2">2</button>
-                                        <button class="bg-gray-400 cursor-pointer my-1 px-2">3</button>
-                                        <button class="bg-gray-400 cursor-pointer my-1 px-1 rounded-r">Next</button>
-                                    </td>
-                                </tr>
+                            <tbody id="teacherTable">
 
 
                             </tbody>
+                            <tr id="teacherPagination" class="invisible text-center text-sm text-gray-100 bg-gray-50 rounded-b-lg border-b border-gray-300 bg-gray-200 text-gray-100">
+                                <td colspan="5" class="py-2">
+                                    <button class="bg-gray-400 cursor-pointer my-1 p-2 rounded-l" onclick="t_previous()">Previous</button>
+                                    <div class="flex inline" id="t_pageNumbers">
+
+                                    </div>
+                                    <button class="bg-gray-400 cursor-pointer my-1 p-2 rounded-r" onclick="t_next()">Next</button>
+                                </td>
+                            </tr>
                         </table>
                       </div>
                 </div>
@@ -188,13 +170,20 @@
     <script src="https://unpkg.com/@material-tailwind/html@latest/scripts/tabs.js"></script>
 
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+    <script>
+        // Onload function
+        $(document).ready(function(){
+            getStudents();
+            getTeachers();
+        });
+    </script>
+
+    <!-- Get Student data -->
     <script>
         let page = 1;
         let last_page;
 
-        $(document).ready(function(){
-            getStudents();
-        });
         // mother function
         function getStudents(){
             $.ajax({
@@ -235,5 +224,52 @@
         }
 
     </script>
+
+    <!-- Get Teacher data -->
+    <script>
+        let t_page = 1;
+        let t_last_page;
+
+        // mother function
+        function getTeachers(){
+            $.ajax({
+                type:"GET",
+                url:"teacher/send-data?page="+t_page,
+                data:{},
+                success:function(data){
+                    t_last_page = data.last_page;
+
+                    $('#teacherTable').html(data.studentTable);
+                    if(data.pagination){
+                        $('#teacherPagination').removeClass('invisible');
+                        $('#t_pageNumbers').html(data.page_numbers);
+                    }else{
+                        $('#teacherPagination').addClass('invisible');
+                    }
+                }
+            });
+        }
+        // Pageintion
+        function t_previous(){
+            if(t_page > 1){
+                t_page--;
+                getTeachers()
+            }
+        }
+
+        function t_next(){
+            if(last_page > t_page){
+                t_page++;
+                getTeachers();
+            }
+        }
+
+        function t_paginate(t_page_nno){
+            t_page = t_page_nno;
+            getTeachers();
+        }
+
+    </script>
+
   </body>
 </html>
