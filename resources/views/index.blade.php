@@ -58,41 +58,23 @@
                                 <th class="p-2 rounded-tl-md">SL</th>
                                 <th class="p-2 ">Name</th>
                                 <th class="p-2 ">Email</th>
+                                <th class="p-2 ">Phone</th>
                                 <th class="p-2 rounded-tr-md">Action</th>
                             </tr>
                         </thead>
-                        <tbody class="">
-                            <tr class="border-b border-gray-300 bg-gray-200">
-                                <td class="p-2">1</td>
-                                <td class="p-2">Samiul</td>
-                                <td class="p-2">samiul@gmail.com</td>
-                                <td class="p-2"><button class="bg-red-500 text-gray-200 p-1 px-2 rounded-lg">Delete</button></td>
-                            </tr>
-                            <tr class="border-b border-gray-300 bg-gray-100">
-                                <td class="p-2">1</td>
-                                <td class="p-2">Samiul</td>
-                                <td class="p-2">samiul@gmail.com</td>
-                                <td class="p-2"><button class="bg-red-500 text-gray-200 p-1 px-2 rounded-lg">Delete</button></td>
-                            </tr>
-                            <tr class="border-b border-gray-300 bg-gray-200">
-                                <td class="p-2">1</td>
-                                <td class="p-2">Samiul</td>
-                                <td class="p-2">samiul@gmail.com</td>
-                                <td class="p-2"><button class="bg-red-500 text-gray-200 p-1 px-2 rounded-lg">Delete</button></td>
-                            </tr>
-
-                            <tr class="text-center text-sm text-gray-100 bg-gray-50 rounded-b-lg border-b border-gray-300">
-                                <td colspan="4">
-                                    <button class="bg-gray-400 cursor-pointer my-1 px-1 rounded-l">Previous</button>
-                                    <button class="bg-gray-400 cursor-pointer my-1 px-2">1</button>
-                                    <button class="bg-gray-400 cursor-pointer my-1 px-2">2</button>
-                                    <button class="bg-gray-400 cursor-pointer my-1 px-2">3</button>
-                                    <button class="bg-gray-400 cursor-pointer my-1 px-1 rounded-r">Next</button>
-                                </td>
-                            </tr>
+                        <tbody id="studentTable">
 
 
                         </tbody>
+                        <tr id="studentPagination" class="invisible text-center text-sm text-gray-100 bg-gray-50 rounded-b-lg border-b border-gray-300 bg-gray-200 text-gray-100">
+                            <td colspan="5" class="py-2">
+                                <button class="bg-gray-400 cursor-pointer my-1 p-2 rounded-l" onclick="previous()">Previous</button>
+                                <div class="flex inline" id="pageNumbers">
+
+                                </div>
+                                <button class="bg-gray-400 cursor-pointer my-1 p-2 rounded-r" onclick="next()">Next</button>
+                            </td>
+                        </tr>
                     </table>
                   </div>
                 </div>
@@ -199,58 +181,59 @@
           </div>
     </div>
 
-    <!-- <div class="flex m-2 justify-center">
-
-        <div class="rounded-lg">
-            <table class="">
-                <thead class="bg-gray-400 text-gray-100">
-                    <tr>
-                        <th class="p-2 rounded-tl-md">SL</th>
-                        <th class="p-2 ">Name</th>
-                        <th class="p-2 ">Email</th>
-                        <th class="p-2 rounded-tr-md">Action</th>
-                    </tr>
-                </thead>
-                <tbody class="">
-                    <tr class="border-b border-gray-300 bg-gray-200">
-                        <td class="p-2">1</td>
-                        <td class="p-2">Samiul</td>
-                        <td class="p-2">samiul@gmail.com</td>
-                        <td class="p-2"><button class="bg-red-500 text-gray-200 p-1 px-2 rounded-lg">Delete</button></td>
-                    </tr>
-                    <tr class="border-b border-gray-300 bg-gray-100">
-                        <td class="p-2">1</td>
-                        <td class="p-2">Samiul</td>
-                        <td class="p-2">samiul@gmail.com</td>
-                        <td class="p-2"><button class="bg-red-500 text-gray-200 p-1 px-2 rounded-lg">Delete</button></td>
-                    </tr>
-                    <tr class="border-b border-gray-300 bg-gray-200">
-                        <td class="p-2">1</td>
-                        <td class="p-2">Samiul</td>
-                        <td class="p-2">samiul@gmail.com</td>
-                        <td class="p-2"><button class="bg-red-500 text-gray-200 p-1 px-2 rounded-lg">Delete</button></td>
-                    </tr>
-
-                    <tr class="text-center text-sm text-gray-100 bg-gray-50 rounded-b-lg border-b border-gray-300">
-                        <td colspan="4">
-                            <button class="bg-gray-400 cursor-pointer my-1 px-1 rounded-l">Previous</button>
-                            <button class="bg-gray-400 cursor-pointer my-1 px-2">1</button>
-                            <button class="bg-gray-400 cursor-pointer my-1 px-2">2</button>
-                            <button class="bg-gray-400 cursor-pointer my-1 px-2">3</button>
-                            <button class="bg-gray-400 cursor-pointer my-1 px-1 rounded-r">Next</button>
-                        </td>
-                    </tr>
-
-
-                </tbody>
-            </table>
-        </div>
-    </div> -->
-
     <!-- from node_modules -->
     <script src="node_modules/@material-tailwind/html/scripts/tabs.js"></script>
 
     <!-- from cdn -->
     <script src="https://unpkg.com/@material-tailwind/html@latest/scripts/tabs.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script>
+        let page = 1;
+        let last_page;
+
+        $(document).ready(function(){
+            getStudents();
+        });
+        // mother function
+        function getStudents(){
+            $.ajax({
+                type:"GET",
+                url:"student/send-data?page="+page,
+                data:{},
+                success:function(data){
+                    last_page = data.last_page;
+
+                    $('#studentTable').html(data.studentTable);
+                    if(data.pagination){
+                        $('#studentPagination').removeClass('invisible');
+                        $('#pageNumbers').html(data.page_numbers);
+                    }else{
+                        $('#studentPagination').addClass('invisible');
+                    }
+                }
+            });
+        }
+        // Pageintion
+        function previous(){
+            if(page > 1){
+                page--;
+                getStudents()
+            }
+        }
+
+        function next(){
+            if(last_page > page){
+                page++;
+                getStudents();
+            }
+        }
+
+        function paginate(page_nno){
+            page = page_nno;
+            getStudents();
+        }
+
+    </script>
   </body>
 </html>
