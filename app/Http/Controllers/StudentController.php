@@ -36,10 +36,10 @@ class StudentController extends Controller
         if($students->hasPages()){
             $pagination = true;
             if($last_page <= 3){
-                $page_numbers = 33;
+                $current_page = $students->currentPage();
                 for($i = 0; $i <= $last_page; $i++){
                     $page_numbers.= '
-                    <button class="bg-gray-400 cursor-pointer my-1 p-2" onclick="paginate('.$i.')">'.$i.'</button>
+                    <button class="bg-gray-400 cursor-pointer my-1 p-2" onclick="paginate('.$i+$current_page.')">'.$i+$current_page.'</button>
                 ';
                 }
             }else{
